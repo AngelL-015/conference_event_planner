@@ -13,7 +13,7 @@ const ConferenceEvent = () => {
   const avItems = useSelector((state) => state.av);
   const mealsItems = useSelector((state) => state.meals);
   const dispatch = useDispatch();
-  const remainingAuditoriumQuantity = 3 - venueItems.find(item => item.name === "Auditorium Hall (Capacity:200)").quantity;
+  const remainingAuditoriumQuantity = 3 - venueItems.find(item => item.name === "Auditorium Hall (Capacity:200)").quantity;  
   
   const handleToggleItems = () => {
       console.log("handleToggleItems called");
@@ -23,6 +23,9 @@ const ConferenceEvent = () => {
   const handleAddToCart = (index) => {
     if (venueItems[index].name === "Auditorium Hall (Capacity:200)" && venueItems[index].quantity >= 3) {
       return; // Prevent further additions
+    }
+    else if (venueItems[index].quantity >= 10) {
+      return;
     }
     dispatch(incrementQuantity(index));
   };
@@ -89,14 +92,14 @@ const ConferenceEvent = () => {
       <div className="display_box1">
         {items.length === 0 && <p>No items selected</p>}
         <table className="table_item_data">
-          <thread>
+          <thead>
             <tr>
               <th>Name</th>
               <th>Unite Cost</th>
               <th>Quantity</th>
               <th>Subtotal</th>
             </tr>
-          </thread>
+          </thead>
           <tbody>
             {items.map((item, index) => (
               <tr key={index}>
@@ -235,7 +238,7 @@ const ConferenceEvent = () => {
                             className={
                               venueItems[index].quantity === 0
                                 ? "btn-warning btn-disabled"
-                                : "btn-warning btn-plus"
+                                : "btn-minus btn-warning"
                             }
                             onClick={() => handleRemoveFromCart(index)}
                           >
@@ -281,7 +284,16 @@ const ConferenceEvent = () => {
                     <div className="text"> {item.name} </div>
                     <div> ${item.cost} </div>
                     <div className="addons_btn">
-                      <button className="btn-warning" onClick={() => handleDecrementAvQuantity(index)}> &ndash; </button>
+                      <button 
+                        className={
+                          avItems[index].quantity === 0
+                            ? "btn-warning btn-disabled"
+                            : "btn-minus btn-warning"
+                        }
+                        onClick={() => handleDecrementAvQuantity(index)}
+                      >
+                        &ndash; 
+                      </button>
                       <span className="quantity-value">{item.quantity}</span>
                       <button className="btn-success" onClick={() => handleIncrementAvQuantity(index)}> &#43; </button>
                     </div> 
@@ -302,7 +314,7 @@ const ConferenceEvent = () => {
                 <label htmlFor="numberOfPeople"><h3>Number of People:</h3></label>
                 <input type="number" className="input_box5" id="numberOfPeople" value={numberOfPeople}
                   onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
-                  mine="1"
+                  min="1"
                 />
               </div>
 
